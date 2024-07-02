@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     SH_API_TOKEN: str
     SH_API_KEY: str
     SH_API_SECRET_KEY: str
+    GH_OWNER: str
+    REPO: str
+    BRANCH: str
 
 
 settings = Settings(_env_file='prod.env', _env_file_encoding='utf-8')

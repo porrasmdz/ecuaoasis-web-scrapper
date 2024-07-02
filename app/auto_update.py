@@ -23,12 +23,19 @@ def get_local_commit(repo_path):
 
 # Función para clonar o actualizar el repositorio
 def update_repo(repo_url, repo_path):
-    if os.path.exists(repo_path):
-        repo = git.Repo(repo_path)
-        origin = repo.remotes.origin
-        origin.pull()
-    else:
-        git.Repo.clone_from(repo_url, repo_path)
+    try:
+        if os.path.exists(repo_path):
+            repo = git.Repo(repo_path)
+            origin = repo.remotes.origin
+            origin.pull()
+            
+            print("Repositorio actualizado exitosamente")
+        else:
+            git.Repo.clone_from(repo_url, repo_path)
+    except git.exc.GitCommandError as e:
+        print(f"Error al actualizar el repositorio: {e}")
+    except Exception as e:
+        print(f"Error desconocido al actualizar el repositorio: {e}")
 
 def check_for_changes():
     try:

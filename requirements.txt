@@ -1,0 +1,7 @@
+pydantic-settings
+selenium
+beautifulsoup4
+requests
+ShopifyAPI
+pandas
+openpyxl

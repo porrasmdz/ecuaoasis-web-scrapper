@@ -1,0 +1,38 @@
+Datos a extraer de shopify:
+Product:
+Title
+Description
+Images or video (blob file)
+Category
+
+product_type
+vendor (ecuaoasis, dropshipping)
+collections (default, elegir la coleccion)
+tags (default tag)
+
+
+=Pricing=
+Price
+charge-taxt?
+Compare-at-price
+Cost per item
+Profit
+Margin
+
+=Inventory=
+Track quantity?
+quantity
+continue_selling_wo_stock?
+has_sku_or_barcode? 
+sku
+barcode
+
+=Shipping=
+physical_product?
+weight
+measure units (lb, oz, g, kg)
+
+(List of variants)
+=Variants=
+option_name
+option_values (list)

@@ -1,17 +1,27 @@
 from logging_instance import customLogger
 import logging
+import threading
 from config import settings
 import sys
 sys.path.append(settings.ROOT_ABSOLUTE_PATH)
 from gui import Application
-from auto_update import check_for_changes
+from auto_update import repo_has_changes, update
 
 logger = customLogger(logging.DEBUG, filename="logs/main.log")
 
+APP_VERSION="1.0.0"
 
 if __name__ == "__main__":
-    check_for_changes()
-    app = Application()
-    app.mostrar_alerta_actualizacion()
+    has_changes = repo_has_changes()
+    app = Application(version=APP_VERSION)
+    if has_changes:
+        update_thread = threading.Thread(target=update)
+        update_thread.start()
+        app.mostrar_alerta_actualizacion()
+    else:
+        app.mostrar_alerta_generica(message="Usted tiene la última versión de esta aplicación.")
     app.mainloop() 
+    
+    
+
     

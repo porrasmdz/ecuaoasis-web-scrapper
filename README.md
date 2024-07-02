@@ -1,3 +1,6 @@
+CMD:
+pyinstaller --onefile --windowed --add-data "favicon.ico;." --icon=assets/favicon.ico app/main.py --collect-data sv_ttk --hidden-import=sv_ttk
+
 TODO:
 1. Registrarse para la API [DONE]
 2. Tener credenciales para API Shopify [DONE]

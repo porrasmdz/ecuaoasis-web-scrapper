@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
+from tkinter import messagebox
 import sys
 from config import settings
 sys.path.append(settings.ROOT_ABSOLUTE_PATH)
@@ -68,6 +69,13 @@ class Application(tk.Tk):
         # self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))
         # self.attributes('-fullscreen', True)
         self.resizable(False, False)
+    
+    def close(self):
+        self.destroy()
+
+    def mostrar_alerta_actualizacion(self):
+        messagebox.showinfo("Actualización en Proceso", "Se va a realizar una actualización. Por favor vuelva abrir la aplicación.")
+        self.close()
 
     def setup_link_widgets(self):
         # Botón para subir archivo

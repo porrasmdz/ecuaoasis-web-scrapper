@@ -12,5 +12,6 @@ logger = customLogger(logging.DEBUG, filename="logs/main.log")
 if __name__ == "__main__":
     check_for_changes()
     app = Application()
+    app.mostrar_alerta_actualizacion()
     app.mainloop() 
     

@@ -6,3 +6,6 @@ ShopifyAPI
 pandas
 openpyxl
 GitPython
+pyinstaller
+python-dotenv
+sv-ttk

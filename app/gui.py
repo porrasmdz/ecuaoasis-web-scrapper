@@ -9,17 +9,28 @@ from shopify_robot import publishProductsToShopify
 from scrapper import scrap_product_info
 from core.driver_factory import WebDriverFactory
 from logging_instance import customLogger
-
 import pandas as pd
 import logging
 import threading
-import inspect
+import os
+import sv_ttk
 
-
+# theme_dir = "forest-dark/"
+# theme_file = "forest-dark.tcl"
+iconfile = "favicon.ico"
+if not hasattr(sys, "frozen"):
+    iconfile = os.path.join(os.path.dirname(__file__), iconfile)
+    # theme_file = os.path.join(os.path.dirname(__file__), theme_file)
+    # theme_dir = os.path.join(os.path.dirname(__file__), theme_dir)
+    
+else:
+    iconfile = os.path.join(sys.prefix, iconfile)
+    # theme_file = os.path.join(sys.prefix, theme_file)
+    # theme_dir = os.path.join(sys.prefix, theme_dir)
 class Application(tk.Tk):
-    def __init__(self):
+    def __init__(self,version):
         super().__init__()
-        self.title("Integrador Universal Ecuaoasis")
+        self.title(f"Integrador Universal Ecuaoasis v{version}")
         self.option_add("*tearOff", False)
 
         # Configuración de columnas y filas de la ventana principal
@@ -28,13 +39,15 @@ class Application(tk.Tk):
         for i in range(2):
             self.rowconfigure(i, weight=1)
 
-        # Estilo y tema
-        self.style = ttk.Style(self)
-        self.tk.call('source', 'themes/forest-light.tcl')
-        self.tk.call('source', 'themes/forest-dark.tcl')
         
-        self.style.theme_use("forest-dark")
+        sv_ttk.set_theme("dark")
+
+        #version and icon
+        self.app_id =f"ecuaoasis.web_scrapper.gui.{version}"
+        self.iconbitmap(default=iconfile)
+    
         # Variables de control
+    
         self.progress = tk.DoubleVar(value=0)
         self.links = []
         self.products = []
@@ -74,8 +87,12 @@ class Application(tk.Tk):
         self.destroy()
 
     def mostrar_alerta_actualizacion(self):
-        messagebox.showinfo("Actualización en Proceso", "Se va a realizar una actualización. Por favor vuelva abrir la aplicación.")
+        messagebox.showinfo("Control de versiones", "Se va a realizar una actualización. Por favor vuelva abrir la aplicación.")
         self.close()
+        
+    def mostrar_alerta_generica(self, message):
+        messagebox.showinfo("Control de versiones",message)
+      
 
     def setup_link_widgets(self):
         # Botón para subir archivo
@@ -120,7 +137,7 @@ class Application(tk.Tk):
         self.actualizar_estado("Declarando los links", 0)
 
         # Botón para iniciar la extracción
-        btn_iniciar = ttk.Button(self.frame_estado, text="Iniciar Extracción", command=self.iniciar_extraccion)
+        btn_iniciar = ttk.Button(self.frame_estado, text="Iniciar Extracción", command=self.iniciar_extraccion,  style="Accent.TButton")
         btn_iniciar.grid(row=0, column=1, padx=5, pady=5)
 
     def setup_results_frame(self):
@@ -220,7 +237,7 @@ class Application(tk.Tk):
         self.progress.set(valor_progreso)
         self.update_idletasks()
 
-    def mostrar_logs(self, text_widget, filename):
+    def mostrar_logs(self, text_widget:ScrolledText, filename):
         try:
             with open(filename, 'r') as log_file:
                 logs = log_file.readlines()
@@ -228,6 +245,7 @@ class Application(tk.Tk):
                 text_widget.delete('1.0', tk.END)
                 for log in logs:
                     text_widget.insert(tk.END, log)
+                text_widget.see(tk.END)
                 text_widget.config(state=tk.DISABLED)
         except FileNotFoundError:
             text_widget.config(state=tk.NORMAL)

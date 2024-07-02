@@ -1,10 +1,10 @@
 from app.models import Product
 from app.config import settings
 from app.utils import Util
+from logging_instance import customLogger
 import shopify
 
-utils = Util()
-
+logger = customLogger(filename="logs/shopify.log",logger_name="__shopify__")
 shop_url = "%s.myshopify.com" % (settings.SH_SHOP_NAME)
 api_version = "2024-04"
 token = settings.SH_API_TOKEN
@@ -17,8 +17,13 @@ scope = ["write_files", "read_files", "write_channels", "read_channels",
             "read_products", "write_publications", "read_publications", "write_product_listings",
             "read_product_listings", "write_locales", "read_locales", "write_locations",
             "read_locations"]
-session = shopify.Session(shop_url, api_version, token, scope)
-shopify.ShopifyResource.activate_session(session)
+
+try:
+    session = shopify.Session(shop_url, api_version, token, scope)
+    shopify.ShopifyResource.activate_session(session)
+    logger.info("La sesión en Shopify se ha iniciado correctamente")
+except Exception as e:
+    logger.info(f"Ha ocurrido el siguiente error al conectarse con su tienda {str(e)}")
 
 def attachImages(new_product, path_list):
     product_id = new_product.id
@@ -34,9 +39,9 @@ def attachImages(new_product, path_list):
     new_product.images = images
     success = new_product.save() 
     if success:
-        utils.log.info(f"Imagenes agregadas exitosamente")
+        logger.info(f"Imagenes agregadas exitosamente")
     if new_product.errors:
-        utils.log.info(f"Error al subir imagenes {new_product.errors.full_messages()}")
+        logger.info(f"Error al subir imagenes {new_product.errors.full_messages()}")
 
 def publishProductsToShopify(product_list: Product):
     for product in product_list:
@@ -68,5 +73,5 @@ def publishProductsToShopify(product_list: Product):
             attachImages(new_product, [path])
             
         if new_product.errors:
-            utils.log.info(f"{new_product.errors.full_messages()}")
+            logger.info(f"{new_product.errors.full_messages()}")
             

@@ -17,7 +17,7 @@ import sv_ttk
 
 # theme_dir = "forest-dark/"
 # theme_file = "forest-dark.tcl"
-iconfile = "favicon.ico"
+iconfile = "favicon-alt.ico"
 if not hasattr(sys, "frozen"):
     iconfile = os.path.join(os.path.dirname(__file__), iconfile)
     # theme_file = os.path.join(os.path.dirname(__file__), theme_file)

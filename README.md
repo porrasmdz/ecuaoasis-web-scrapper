@@ -1,5 +1,5 @@
 CMD:
-pyinstaller --onefile --windowed --add-data "favicon.ico;." --icon=assets/favicon.ico app/main.py --collect-data sv_ttk --hidden-import=sv_ttk
+pyinstaller --onefile --windowed --add-data "favicon-alt.ico;." --icon=assets/favicon-alt.ico app/main.py --collect-data sv_ttk --hidden-import=sv_ttk --clean
 
 TODO:
 1. Registrarse para la API [DONE]

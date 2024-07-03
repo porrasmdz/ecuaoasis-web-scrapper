@@ -62,8 +62,8 @@ def build_application():
             "pyinstaller",
             "--onefile",
             "--windowed",
-            "--add-data", "favicon.ico;.",
-            "--icon=assets/favicon.ico",
+            "--add-data", "favicon-alt.ico;.",
+            "--icon=assets/favicon-alt.ico",
             "app/main.py",
             "--collect-data", "sv_ttk",
             "--hidden-import=sv_ttk"

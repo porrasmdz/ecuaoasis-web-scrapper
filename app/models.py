@@ -32,7 +32,7 @@ class Product(BaseModel):
     images_link: List[Any] = [] #Images req not links
     category: Optional[str] = "" #opt
     product_type: Optional[str] = ""
-    vendor: Literal["ecuaoasis", "Dropshipping", "Test"] = "Test" #ecuaoasis Dropshipping
+    vendor: Literal["ecuaoasis", "Dropshipping", "IntegradorApp"] = "IntegradorApp" #ecuaoasis Dropshipping
     collections: List[str] = ["Dropshipping"] 
     tags: List[str] = ["dropshipping"]
     pricing: Pricing = Pricing()

@@ -8,7 +8,7 @@ from auto_update import repo_has_changes, update
 
 logger = customLogger(logging.DEBUG, filename="logs/main.log")
 
-APP_VERSION="1.0.3"
+APP_VERSION="1.0.4"
 
 if __name__ == "__main__":
     has_changes = repo_has_changes()

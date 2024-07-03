@@ -131,7 +131,7 @@ class AlibabaPage(BasePage):
             logger_cb()
             title = self.findText(self._product_title)
             
-            self.logProcessStep("EXTRACTING IMAGES")
+            self.logProcessStep("Extrayendo Imagenes")
             logger_cb()
             image_els = self.findImagesWithin(self._product_images_div)
             
@@ -161,7 +161,7 @@ class AlibabaPage(BasePage):
             self.logProcessStep("RESULTS")
             logger_cb()
             #TODO: add inventory details to products (because some are unavailable)
-            product = Product(title=title, description=description, images_link=[image_paths],
+            product = Product(title=title, description=description, images_link=image_paths,
                               pricing=pricing, product_type=p_type, variants=variants)
             
             self.log.info(f"Extracción exitosa del producto {product.title}")

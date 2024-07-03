@@ -124,15 +124,19 @@ class AliexpressPage(BasePage):
             self.logProcessStep("Exportando producto")
             logger_cb()
             #TODO: add inventory details to products (because some are unavailable)
-            product = Product(title=title,description=description, images_link=[image_paths],
+            product = Product(title=title,description=description, images_link=image_paths,
                               pricing=pricing, variants=variants)
             
             self.log.info(f"Extracción exitosa del producto {product.title}")
             self.log.info(f"Resultado {product.model_dump()}")
+            
+            logger_cb()
             return product
 
         except Exception as e:
             self.log.error(f"Error al extraer informacion de un producto en ALIEXPRESS : {str(e)}")
+            
+            logger_cb()
             
 
     def getPageTitle(self):

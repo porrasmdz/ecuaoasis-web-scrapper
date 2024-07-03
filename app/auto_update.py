@@ -2,6 +2,7 @@ from config import settings
 import requests
 import git
 import os
+import subprocess
 from logging_instance import customLogger
 
 GITHUB_API_URL = "https://api.github.com/repos/{owner}/{repo}/commits"
@@ -53,10 +54,32 @@ def repo_has_changes():
         logger.info(f"Error al VERIFICAR la version: {e}")
         return False
 
+def build_application():
+    try:
+        logger.info("Reconstruyendo la aplicación...")
+        # Ejecutar el comando de PyInstaller
+        subprocess.run([
+            "pyinstaller",
+            "--onefile",
+            "--windowed",
+            "--add-data", "favicon.ico;.",
+            "--icon=assets/favicon.ico",
+            "app/main.py",
+            "--collect-data", "sv_ttk",
+            "--hidden-import=sv_ttk"
+        ], check=True)
+        logger.info("Aplicación descargada e instalada exitosamente.")
+    except subprocess.CalledProcessError as e:
+        logger.info(f"Error al reconstruir la aplicación: {e}")
+    except Exception as e:
+        logger.info(f"Error desconocido al reconstruir la aplicación: {e}")
+
+
 def update():
     try:
         logger.info("Actualizando a la última versión...")
         update_repo(REPO_URL.format(owner=GH_OWNER, repo=REPO), LOCAL_REPO_PATH)
-        logger.info("Proyecto actualizado correctamente.")
+        logger.info("Proyecto descargado")
+        build_application()
     except Exception as e:
         logger.info(f"Error al ACTUALIZAR el proyecto: {e}")

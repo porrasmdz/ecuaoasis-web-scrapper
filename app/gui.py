@@ -227,8 +227,9 @@ class Application(tk.Tk):
         for i in self.results_tree.get_children():
             self.results_tree.delete(i)
         for product in self.products:
-            summary = product.summary()
-            self.results_tree.insert("", tk.END, values=(summary['title'], summary['price'], summary['num_variants']))
+            if product is not None:
+                summary = product.summary()
+                self.results_tree.insert("", tk.END, values=(summary['title'], summary['price'], summary['num_variants']))
 
         self.results_tree.heading("col1", text=f"Productos ({len(self.products)})")
 
@@ -262,6 +263,7 @@ class Application(tk.Tk):
 
     def update_logs_cb(self):
         self.mostrar_logs(self.tabdict["Ejecución General"], "logs/robot_results.log")
+        self.mostrar_logs(self.tabdict["Shopify"], "logs/shopify.log")
 
     def iniciar_extraccion(self):
         def extraccion_en_hilo():
@@ -289,10 +291,18 @@ class Application(tk.Tk):
                 
             self.logger.info("Productos extraídos correctamente.")
             self.update_logs_cb()
-            self.actualizar_estado("Extracción completada", 100)
-            
+            self.actualizar_estado("Extracción completada", 60)
             driver.quit()
-
+            self.actualizar_estado("Subiendo a Shopify", 80)
+            self.logger.info("Conexión al navegador finalizada.")
+            self.logger.info("Subiendo productos a la tienda...")
+            self.update_logs_cb()
+            
+            publishProductsToShopify(self.products, self.update_logs_cb)
+            self.logger.info("Proceso de carga finalizado.")
+            
+            self.actualizar_estado("Completado", 100)
+            self.update_logs_cb()
         # Crear y comenzar el hilo para la extracción
         self.extraccion_thread = threading.Thread(target=extraccion_en_hilo)
         self.extraccion_thread.start()

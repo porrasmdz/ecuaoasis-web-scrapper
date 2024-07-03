@@ -1,7 +1,8 @@
-from app.models import Product
+from app.models import Product as ProductObject
 from app.config import settings
 from app.utils import Util
 from logging_instance import customLogger
+from typing import List
 import shopify
 
 logger = customLogger(filename="logs/shopify.log",logger_name="__shopify__")
@@ -18,14 +19,8 @@ scope = ["write_files", "read_files", "write_channels", "read_channels",
             "read_product_listings", "write_locales", "read_locales", "write_locations",
             "read_locations"]
 
-try:
-    session = shopify.Session(shop_url, api_version, token, scope)
-    shopify.ShopifyResource.activate_session(session)
-    logger.info("La sesión en Shopify se ha iniciado correctamente")
-except Exception as e:
-    logger.info(f"Ha ocurrido el siguiente error al conectarse con su tienda {str(e)}")
 
-def attachImages(new_product, path_list):
+def attachImages(new_product, path_list: list):
     product_id = new_product.id
     images = []
     for path in path_list:
@@ -43,35 +38,62 @@ def attachImages(new_product, path_list):
     if new_product.errors:
         logger.info(f"Error al subir imagenes {new_product.errors.full_messages()}")
 
-def publishProductsToShopify(product_list: Product):
-    for product in product_list:
-        new_product = shopify.Product()
-        new_product.title = product.title
-        new_product.body_html = product.description
-        new_product.vendor = product.vendor
-        new_product.product_type = product.product_type
-        new_product.tags = product.tags
-        
-        # new_product.options = [
-        #     {"name" : "Size"},
-        #     {"name" : "Colour"},
-        #     {"name" : "Material"}
-        # ]
+def publishProductsToShopify(product_list: List[ProductObject], logs_cb:callable=None):
+    
+    logger.info("Iniciando conexion con Shopify...")
+    logs_cb()
+    session = shopify.Session(shop_url, api_version, token, scope)
+    shopify.ShopifyResource.activate_session(session)
+    logger.info("Iniciando conexion con Shopify...")
+    logs_cb()
+    logger.info("Conexión Establecida")
+    logs_cb()
+    logger.info(f"Se van a cargar {str(len(product_list))} productos")
+    logs_cb()
 
-        # colors = ['Black', 'Blue', 'Green', 'Red']
-        # sizes = ['S', 'M', 'L', 'XL']
-        # new_product.variants = []
-        # new_product.images = []
-        # new_product.image = None
-        success = new_product.save()
-        if success:
-            new_product.price = product.pricing.price
-            new_product.compare_at_price = product.pricing.compare_at_price
-            new_product.save()
+
+    for product in product_list:
+        try:
+            new_product = shopify.Product()
+            new_product.title = product.title
+            new_product.body_html = product.description
+            new_product.vendor = product.vendor
+            new_product.product_type = product.product_type
+            new_product.tags = product.tags
             
-            path  = "products/ElockCerradurainteligenteconBluetoothcerradurainteligenteconpantallatctildeseguridadnuevaaplicacindecerrojomuertopreciodefbricacerradurainteligente/image-1.png"
-            attachImages(new_product, [path])
-            
-        if new_product.errors:
+            # new_product.options = [
+            #     {"name" : "Size"},
+            #     {"name" : "Colour"},
+            #     {"name" : "Material"}
+            # ]
+
+            # colors = ['Black', 'Blue', 'Green', 'Red']
+            # sizes = ['S', 'M', 'L', 'XL']
+            # new_product.variants = []
+            # new_product.images = []
+            # new_product.image = None
+            success = new_product.save()
+            logger.info(f"Creado el producto: {product.title}")
+            logs_cb()
+
+            if success:
+                
+                logger.info(f"Subiendo {len(product.images_link) if product.images_link else 0} imagenes del producto")
+                logs_cb()
+                new_product.price = product.pricing.price
+                new_product.compare_at_price = product.pricing.compare_at_price
+                new_product.save()
+                attachImages(new_product,product.images_link)
+                
+                logger.info(f"Imagenes subidas correctamente")
+                logs_cb()
+            if new_product.errors:
+                logger.info(f"Error en la subida del producto a Shopify")
+                logger.info(f"{new_product.errors.full_messages()}")
+                logs_cb()
+        
+        except Exception as e:
+            logger.info(f"Error en la carga del producto a Shopify")
             logger.info(f"{new_product.errors.full_messages()}")
-            
+            logger.info(f"{str(e)}")
+            logs_cb()    

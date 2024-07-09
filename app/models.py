@@ -29,12 +29,12 @@ class Variant(BaseModel):
 class Product(BaseModel):
     title: str 
     description: Optional[str] = "" #opt = description
-    images_link: List[Any] = [] #Images req not links
+    images_link: Optional[List[Any]] = [] #Images req not links
     category: Optional[str] = "" #opt
     product_type: Optional[str] = ""
     vendor: Literal["ecuaoasis", "Dropshipping", "IntegradorApp"] = "IntegradorApp" #ecuaoasis Dropshipping
     collections: List[str] = ["Dropshipping"] 
-    tags: List[str] = ["dropshipping"]
+    tags: Optional[List[str]] = ["dropshipping"]
     pricing: Pricing = Pricing()
     inventory: Inventory = Inventory()
     shipping: Shipping = Shipping()

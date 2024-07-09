@@ -134,7 +134,7 @@ class Application(tk.Tk):
 
         self.progress_bar = ttk.Progressbar(self.frame_estado, orient="horizontal", mode="determinate", variable=self.progress)
         self.progress_bar.grid(row=1, padx=5, pady=5, sticky="ew")
-        self.actualizar_estado("Declarando los links", 0)
+        self.actualizar_estado("Inicio", 0)
 
         # Botón para iniciar la extracción
         btn_iniciar = ttk.Button(self.frame_estado, text="Iniciar Extracción", command=self.iniciar_extraccion,  style="Accent.TButton")
@@ -267,11 +267,17 @@ class Application(tk.Tk):
 
     def iniciar_extraccion(self):
         def extraccion_en_hilo():
-            self.logger.info("Enmascarando IP con Proxy...")
-            self.actualizar_estado("Enmascarando IP con Proxy...", 10)
+            self.logger.info("Configurando conexion del BOT con IP...")
+            self.actualizar_estado("Configurando conexion...", 10)
             self.update_logs_cb()
             wdf = WebDriverFactory("chrome")
             driver = wdf.getWebDriverInstance(logger_cb=self.update_logs_cb)
+            if driver is None:
+                self.update_logs_cb()
+                self.logger.info("Error de conexión. Por favor revise conexión a internet...")
+                self.actualizar_estado("Inicio", 0)
+                self.update_logs_cb()
+                return
             self.update_logs_cb()
             self.logger.info("Iniciando extracción de productos...")
             self.actualizar_estado("Extrayendo productos...", 40)
@@ -286,6 +292,7 @@ class Application(tk.Tk):
                     # Actualizar la interfaz en el hilo principal después de cada producto extraído
                     self.after(0, self.actualizar_resultados)
                     self.after(0, self.update_logs_cb)
+                    # s= input("Dale a ENTER para seguir")
                 except Exception as e:
                     self.logger.info(f"Error al extraer producto {link} {str(e)}")
                 

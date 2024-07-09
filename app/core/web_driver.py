@@ -5,8 +5,10 @@
 
 from selenium.webdriver.common.by import By
 from traceback import print_stack
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import *
 import random
 import app.logging_instance as cl
@@ -65,7 +67,7 @@ class SeleniumDriver():
                           " not correct/supported")
         return False
 
-    def getElement(self, locator, locatorType="id"):
+    def getElement(self, locator, locatorType="id") -> WebElement:
         element = None
         try:
             locatorType = locatorType.lower()
@@ -76,7 +78,16 @@ class SeleniumDriver():
         except:
             self.log.info("Element not found with locator: " + locator +
                           " and locatorType: " + locatorType)
+        # if element is not None:
+        #     self.move_mouse_smoothly(element)
         return element
+
+    def scrollToElement(self, x_path_locator):
+        self.driver.execute_script("return arguments[0].scrollIntoView(true);",
+                               WebDriverWait(self.driver, 10, poll_frequency=0.5)
+                               .until(EC.presence_of_element_located(
+                                   (By.XPATH, x_path_locator))))
+        
 
     def getElementList(self, locator, locatorType="id"):
         """
@@ -100,19 +111,18 @@ class SeleniumDriver():
         """
         delay = random.uniform(1, MAX_DELAY_INTERVAL)
         time.sleep(delay)
-        self.log.info("Simulating human delay by waiting: " + str(delay) +
-            " seconds")
-        
-        delay = random.uniform(1, MAX_DELAY_INTERVAL)
+        self.log.info(f"Human-like delay of {delay} seconds")
         try:
             if locator is not None:  # This means if locator is not empty
                 # element = self.getElement(locator, locatorType)
-                wait = WebDriverWait(self.driver, delay) 
+                wait = WebDriverWait(self.driver, MAX_AVAILABLE_TIMEOUT) 
                 element = wait.until(EC.presence_of_element_located((self.getByType(locatorType), locator)))
-                self.log.info("Clicked on element with locator: " + locator +
+                
+                self.log.info("Clicking on element with locator: " + locator +
                           " locatorType: " + locatorType)
             else:
                 self.log.info("Clicking on element " + element)
+      
             element.click()
                 
         except:
@@ -124,6 +134,17 @@ class SeleniumDriver():
                 self.log.info("Cannot click on element with class " + el_class)
             print_stack()
 
+    def ease_in_out(self,t):
+        # Función de interpolación de easing (ease-in-out)
+        return t * t * (3 - 2 * t)
+
+    def move_mouse_smoothly(self, target: WebElement, duration=1.0, steps=100):
+        # Crear un ActionChain para mover el mouse
+        actions = ActionChains(self.driver)
+        actions.move_to_element(target)
+        actions.perform()
+        # Obtener las coordenadas del destino
+        
     def sendKeys(self, data, locator="", locatorType="id", element=None):
         """
         Send keys to an element -> MODIFIED

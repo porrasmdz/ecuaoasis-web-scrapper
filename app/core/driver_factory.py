@@ -39,7 +39,6 @@ class WebDriverFactory():
 
     def getWebDriverInstance(self, baseURL=BASE_URL, logger_cb: callable=print()):
         if self.browser == "chrome":
-            
             driver = webdriver.Chrome(options=self.chrome_options)
             driver = self.mask_ip_address(driver,logger_cb=logger_cb)
         else:
@@ -65,11 +64,12 @@ class WebDriverFactory():
         for i in range(0, len(proxies)):
             try:
                 
-                utils.log.info(f"Configurando Proxy con IP {proxies[i]}")
-                
+                utils.log.info(f"Configurando conexion del bot con Proxy IP {proxies[i]}")
+                # 189.240.60.169:9090
                 self.chrome_options.add_argument('--proxy-server={}'.format(proxies[i]))
                 driver = webdriver.Chrome(options=self.chrome_options)
                 driver.get("https://www.whatismyip.com/proxy-check/?iref=home")
+                
                 validator_el= WebDriverWait(driver, 10, poll_frequency=0.5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div#return-date ul li")))
                 validator_str = validator_el.get_attribute("innerText")
                 if "Proxy Detected" in validator_str:
@@ -77,7 +77,7 @@ class WebDriverFactory():
                     logger_cb()
                     break
             except Exception as e:
-                utils.log.info(f"No se pudo autenticar el Proxy. Reintentando con otro...")
+                utils.log.info(f"Reintentando configuracion de red...")
                 logger_cb()
                 driver.quit()
 
